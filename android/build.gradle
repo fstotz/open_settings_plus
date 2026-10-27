@@ -22,7 +22,15 @@ allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+// AGP 9 provides Kotlin unless the host explicitly opts out.
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+def builtInKotlinEnabled = agpMajor >= 9 && providers.gradleProperty("android.builtInKotlin")
+        .map { it.toBoolean() }
+        .orElse(true)
+        .get()
+if (!builtInKotlinEnabled) {
+    apply plugin: 'kotlin-android'
+}
 
 android {
     // Conditional for compatibility with AGP <4.2.
@@ -40,12 +48,11 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = '11'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+    // Built-in Kotlin inherits the Java target; legacy KGP needs this option.
+    if (!builtInKotlinEnabled) {
+        kotlinOptions {
+            jvmTarget = '11'
+        }
     }
 
     defaultConfig {

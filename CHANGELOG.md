@@ -1,3 +1,7 @@
+## Unreleased
+
+- Support AGP 9 built-in Kotlin while retaining legacy KGP and Apple packaging support.
+
 ## 0.5.1
 
 ### 🔧 Bug Fixes
